@@ -1,6 +1,9 @@
 module.exports = {
   rules: {
-    'react-refresh/only-export-components': 'warn'
+    'react-refresh/only-export-components': 'warn',
+    'unicorn/filename-case': 'off',
+    'unicorn/prevent-abbreviations': ["error", {"replacements": {"e": false , "res": false}}],
+    'unicorn/no-await-expression-member': 'off'
   },
   reportUnusedDisableDirectives: true,
   ignorePatterns: ['dist/*'],
@@ -13,7 +16,8 @@ module.exports = {
     'plugin:react/recommended',
     'plugin:react/jsx-runtime',
     'plugin:react-hooks/recommended',
-    'plugin:@typescript-eslint/recommended'
+    'plugin:@typescript-eslint/recommended',
+    "plugin:unicorn/recommended"
   ],
   parser: '@typescript-eslint/parser'
 }
