@@ -1,28 +1,23 @@
-import { useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { socket } from "../socket";
+import { User } from "../types.js";
 
 const Chat = ({ username }: { username: string }) => {
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [message, setMessage] = useState("");
-  const [actualRoom, setActualRoom] = useState("Room 1");
+  const [messages, setMessages] = useState<User[]>([]);
+  const [personnalMessages, setPersonnalMessages] = useState<User[]>([]);
+  const [actualRoom, setActualRoom] = useState("Room Dev");
   const [typingMessage, setTypingMessage] = useState("");
   const [inputMessage, setInputMessage] = useState("");
 
   useEffect(() => {
     function onConnect() {
       setIsConnected(true);
-      socket.emit("join_room", actualRoom);
     }
 
-    function onMessage(data: {
-      message: string;
-      isTyping: boolean;
-      username: string;
-    }) {
-      setMessage(data.message);
-      if (data.isTyping) {
-        return setTypingMessage(`${data.username} is writing ...`);
-      }
+    function onMessage(data: User[]) {
+      setPersonnalMessages(data.filter((user) => user.username === username));
+      setMessages(data.filter((user) => user.username !== username));
       return setTypingMessage("");
     }
 
@@ -47,27 +42,32 @@ const Chat = ({ username }: { username: string }) => {
       socket.off("receive_message", onMessage);
       socket.off("receive_typing_message", onTypingMessage);
     };
-  }, [actualRoom]);
+  }, [username]);
 
-  const sendMessage = () => {
-    socket.emit("send_message", {
-      message: inputMessage,
-      actualRoom,
-      isTyping: false,
-      id: socket.id,
-      username,
-    });
-    setTypingMessage("");
-    setInputMessage("");
+  const sendMessage = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (inputMessage.trim() !== "") {
+      socket.emit("send_message", {
+        message: inputMessage,
+        actualRoom,
+        isTyping: false,
+        id: socket.id,
+        username,
+        date: Date.now(),
+      });
+      setTypingMessage("");
+      setInputMessage("");
+    }
   };
 
   const joinRoom = (room: string) => {
     socket.emit("leave_room", actualRoom);
     setActualRoom(room);
     socket.emit("join_room", room);
+    // setMessages("");
   };
 
-  const handleTyping = (e: { currentTarget: { value: string } }) => {
+  const handleTyping = (e: ChangeEvent<HTMLInputElement>) => {
     setInputMessage(e.currentTarget.value);
     if (e.currentTarget.value.trim() === "") {
       return socket.emit("send_typing_message", {
@@ -85,20 +85,50 @@ const Chat = ({ username }: { username: string }) => {
     });
   };
 
+  const convertTime = (date: number | undefined) => {
+    if (typeof date === "number") {
+      const convertDate = new Date(date);
+      convertDate.toLocaleString("fr-FR", { timeZone: "Europe/Paris" });
+      const hours =
+        (convertDate.getHours() < 10 ? "0" : "") + convertDate.getHours();
+      const mins =
+        (convertDate.getMinutes() < 10 ? "0" : "") + convertDate.getMinutes();
+      return `${hours}:${mins}`;
+    }
+  };
+
   return (
     <>
       <h2>
         {actualRoom}, {username}
       </h2>
       {isConnected ? <p>connected</p> : <p>disconnected</p>}
-      <p>{message}</p>
+      {messages.map((user, index) => (
+        <div key={index}>
+          <p>
+            {user.message} : <i>{user.username}</i> send at{" "}
+            {convertTime(user.date)}
+          </p>
+        </div>
+      ))}
+
+      {personnalMessages.map((user, index) => (
+        <div key={index}>
+          <p>
+            {user.message} : <i>{user.username}</i> send at{" "}
+            {convertTime(user.date)}
+          </p>
+        </div>
+      ))}
 
       <button onClick={() => joinRoom("Room Dev")}>Room 1</button>
       <button onClick={() => joinRoom("Room Prod")}>Room 2</button>
 
       {typingMessage ? <p>{typingMessage}</p> : false}
-      <input type="text" value={inputMessage} onChange={handleTyping} />
-      <button onClick={sendMessage}>Send</button>
+      <form onSubmit={sendMessage}>
+        <input type="text" value={inputMessage} onChange={handleTyping} />
+        <input type="submit" value="Send" />
+      </form>
     </>
   );
 };
