@@ -1,6 +1,8 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { socket } from "../socket";
 import { User } from "../types.js";
+import data from "@emoji-mart/data";
+import Picker from "@emoji-mart/react";
 
 const convertTime = (date: number | undefined) => {
   if (typeof date === "number") {
@@ -17,10 +19,11 @@ const convertTime = (date: number | undefined) => {
 const Chat = ({ username }: { username: string }) => {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [messages, setMessages] = useState<User[]>([]);
-  const [personnalMessages, setPersonnalMessages] = useState<User[]>([]);
+  // const [personnalMessages, setPersonnalMessages] = useState<User[]>([]);
   const [actualRoom, setActualRoom] = useState("Room Dev");
   const [typingMessage, setTypingMessage] = useState("");
   const [inputMessage, setInputMessage] = useState("");
+  const [showEmoji, setShowEmoji] = useState(false);
 
   useEffect(() => {
     function onConnect() {
@@ -28,8 +31,8 @@ const Chat = ({ username }: { username: string }) => {
     }
 
     function onMessage(data: User[]) {
-      setPersonnalMessages(data.filter((user) => user.username === username));
-      setMessages(data.filter((user) => user.username !== username));
+      // setPersonnalMessages(data.filter((user) => user.username === username));
+      setMessages(data);
       return setTypingMessage("");
     }
 
@@ -104,21 +107,28 @@ const Chat = ({ username }: { username: string }) => {
       {isConnected ? <p>connected</p> : <p>disconnected</p>}
       {messages.map((user, index) => (
         <div key={index}>
-          <p>
-            {user.message} : <i>{user.username}</i> send at{" "}
-            {convertTime(user.date)}
-          </p>
+          {user.username === username ? (
+            <p style={{ color: "red" }}>
+              {user.message} : <i>{user.username}</i> send at{" "}
+              {convertTime(user.date)}
+            </p>
+          ) : (
+            <p>
+              {user.message} : <i>{user.username}</i> send at{" "}
+              {convertTime(user.date)}
+            </p>
+          )}
         </div>
       ))}
 
-      {personnalMessages.map((user, index) => (
-        <div key={index}>
-          <p>
-            {user.message} : <i>{user.username}</i> send at{" "}
-            {convertTime(user.date)}
-          </p>
-        </div>
-      ))}
+      {/*{personnalMessages.map((user, index) => (*/}
+      {/*  <div key={index}>*/}
+      {/*    <p>*/}
+      {/*      {user.message} : <i>{user.username}</i> send at{" "}*/}
+      {/*      {convertTime(user.date)}*/}
+      {/*    </p>*/}
+      {/*  </div>*/}
+      {/*))}*/}
 
       <button onClick={() => joinRoom("Room Dev")}>Room 1</button>
       <button onClick={() => joinRoom("Room Prod")}>Room 2</button>
@@ -127,6 +137,20 @@ const Chat = ({ username }: { username: string }) => {
       <form onSubmit={sendMessage}>
         <input type="text" value={inputMessage} onChange={handleTyping} />
         <input type="submit" value="Send" />
+        <button type={"button"} onClick={() => setShowEmoji(!showEmoji)}>
+          😀
+        </button>
+        {showEmoji ? (
+          <Picker
+            locale={"fr"}
+            data={data}
+            onEmojiSelect={(e: { native: string }) =>
+              setInputMessage(inputMessage + e.native)
+            }
+          />
+        ) : (
+          false
+        )}
       </form>
     </>
   );
