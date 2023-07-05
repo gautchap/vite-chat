@@ -2,6 +2,18 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import { socket } from "../socket";
 import { User } from "../types.js";
 
+const convertTime = (date: number | undefined) => {
+  if (typeof date === "number") {
+    const convertDate = new Date(date);
+    convertDate.toLocaleString("fr-FR", { timeZone: "Europe/Paris" });
+    const hours =
+      (convertDate.getHours() < 10 ? "0" : "") + convertDate.getHours();
+    const mins =
+      (convertDate.getMinutes() < 10 ? "0" : "") + convertDate.getMinutes();
+    return `${hours}:${mins}`;
+  }
+};
+
 const Chat = ({ username }: { username: string }) => {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [messages, setMessages] = useState<User[]>([]);
@@ -64,7 +76,6 @@ const Chat = ({ username }: { username: string }) => {
     socket.emit("leave_room", actualRoom);
     setActualRoom(room);
     socket.emit("join_room", room);
-    // setMessages("");
   };
 
   const handleTyping = (e: ChangeEvent<HTMLInputElement>) => {
@@ -83,18 +94,6 @@ const Chat = ({ username }: { username: string }) => {
       id: socket.id,
       username,
     });
-  };
-
-  const convertTime = (date: number | undefined) => {
-    if (typeof date === "number") {
-      const convertDate = new Date(date);
-      convertDate.toLocaleString("fr-FR", { timeZone: "Europe/Paris" });
-      const hours =
-        (convertDate.getHours() < 10 ? "0" : "") + convertDate.getHours();
-      const mins =
-        (convertDate.getMinutes() < 10 ? "0" : "") + convertDate.getMinutes();
-      return `${hours}:${mins}`;
-    }
   };
 
   return (

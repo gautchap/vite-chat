@@ -5,12 +5,12 @@ import express from "express";
 import compression from "compression";
 import { renderPage } from "vite-plugin-ssr/server";
 import { root } from "./root.js";
-import http from "http";
+import http from "node:http";
 import { Server } from "socket.io";
 import { webSocket } from "./websocket.js";
 const isProduction = process.env.NODE_ENV === "production";
 
-startServer();
+await startServer();
 
 async function startServer() {
   const app = express();
@@ -30,13 +30,13 @@ async function startServer() {
     // ⚠️ We instantiate it only in development. (It isn't needed in production and it
     // would unnecessarily bloat our server in production.)
     const vite = await import("vite");
-    const viteDevMiddleware = (
+    const viteDevelopmentMiddleware = (
       await vite.createServer({
         root,
         server: { middlewareMode: true },
       })
     ).middlewares;
-    app.use(viteDevMiddleware);
+    app.use(viteDevelopmentMiddleware);
   }
 
   // ...
@@ -45,9 +45,9 @@ async function startServer() {
 
   // Vite-plugin-ssr middleware. It should always be our last middleware (because it's a
   // catch-all middleware superseding any middleware placed after it).
-  app.get("*", async (req, res, next) => {
+  app.get("*", async (request, res, next) => {
     const pageContextInit = {
-      urlOriginal: req.originalUrl,
+      urlOriginal: request.originalUrl,
     };
     const pageContext = await renderPage(pageContextInit);
     const { httpResponse } = pageContext;

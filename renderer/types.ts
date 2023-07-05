@@ -1,7 +1,7 @@
 export type { PageContextServer };
 export type { PageContextClient };
 export type { PageContext };
-export type { PageProps };
+export type { PageProperties as PageProps };
 
 import type {
   PageContextBuiltIn,
@@ -14,12 +14,12 @@ import type {
   //*/
 } from "vite-plugin-ssr/types";
 
-type Page = (pageProps: PageProps) => React.ReactElement;
-type PageProps = Record<string, unknown>;
+type Page = (pageProperties: PageProperties) => React.ReactElement;
+type PageProperties = Record<string, unknown>;
 
 export type PageContextCustom = {
   Page: Page;
-  pageProps?: PageProps;
+  pageProps?: PageProperties;
   urlPathname: string;
   exports: {
     documentProps?: {
