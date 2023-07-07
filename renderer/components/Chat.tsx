@@ -3,6 +3,15 @@ import { socket } from "../socket";
 import { User } from "../types.js";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import {
+  ButtonSubmit,
+  FormMessage,
+  InputText,
+  Main,
+  ReceiveMessage,
+  SendMessage,
+  Ul,
+} from "./chatBody";
 
 const convertTime = (date: number | undefined) => {
   if (typeof date === "number") {
@@ -16,10 +25,16 @@ const convertTime = (date: number | undefined) => {
   }
 };
 
+const isMobile = () => {
+  if (/android/i.test(navigator.userAgent)) return "Android";
+  if (/iphone/i.test(navigator.userAgent)) return "iPhone";
+  return "PC";
+};
+
 const Chat = ({ username }: { username: string }) => {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [messages, setMessages] = useState<User[]>([]);
-  // const [personnalMessages, setPersonnalMessages] = useState<User[]>([]);
+
   const [actualRoom, setActualRoom] = useState("Room Dev");
   const [typingMessage, setTypingMessage] = useState("");
   const [inputMessage, setInputMessage] = useState("");
@@ -31,7 +46,6 @@ const Chat = ({ username }: { username: string }) => {
     }
 
     function onMessage(data: User[]) {
-      // setPersonnalMessages(data.filter((user) => user.username === username));
       setMessages(data);
       return setTypingMessage("");
     }
@@ -105,53 +119,78 @@ const Chat = ({ username }: { username: string }) => {
         {actualRoom}, {username}
       </h2>
       {isConnected ? <p>connected</p> : <p>disconnected</p>}
-      {messages.map((user, index) => (
-        <div key={index}>
-          {user.username === username ? (
-            <p style={{ color: "red" }}>
-              {user.message} : <i>{user.username}</i> send at{" "}
-              {convertTime(user.date)}
-            </p>
-          ) : (
-            <p>
-              {user.message} : <i>{user.username}</i> send at{" "}
-              {convertTime(user.date)}
-            </p>
+
+      <Main>
+        <Ul>
+          {messages.map((user, index) =>
+            user.username === username ? (
+              <div key={`${user.id}_${index}`}>
+                <SendMessage>
+                  <p>
+                    {user.message} : <i>{user.username}</i> send at{" "}
+                    {convertTime(user.date)}
+                  </p>
+                </SendMessage>
+              </div>
+            ) : (
+              <div key={`${user.id}_${index}`}>
+                <ReceiveMessage>
+                  <p>
+                    {user.message} : <i>{user.username}</i> send at{" "}
+                    {convertTime(user.date)}
+                  </p>
+                </ReceiveMessage>
+              </div>
+            )
           )}
+        </Ul>
+
+        <div>
+          {/*<button onClick={() => joinRoom("Room Dev")}>Room 1</button>*/}
+          {/*<button onClick={() => joinRoom("Room Prod")}>Room 2</button>*/}
+
+          {typingMessage ? <p>{typingMessage}</p> : false}
+          <FormMessage onSubmit={sendMessage}>
+            <InputText
+              type="text"
+              value={inputMessage}
+              onChange={handleTyping}
+              placeholder="Send a message ..."
+            />
+
+            <ButtonSubmit type="submit">
+              <svg
+                style={{ verticalAlign: "middle" }}
+                xmlns="http://www.w3.org/2000/svg"
+                height="1em"
+                viewBox="0 0 384 512"
+              >
+                <path
+                  fill="white"
+                  d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
+                />
+              </svg>
+            </ButtonSubmit>
+            {isMobile() === "PC" && (
+              <button type={"button"} onClick={() => setShowEmoji(!showEmoji)}>
+                😀
+              </button>
+            )}
+
+            {showEmoji ? (
+              <Picker
+                locale={"fr"}
+                data={data}
+                onEmojiSelect={(e: { native: string }) =>
+                  setInputMessage(inputMessage + e.native)
+                }
+              />
+            ) : (
+              false
+            )}
+          </FormMessage>
         </div>
-      ))}
-
-      {/*{personnalMessages.map((user, index) => (*/}
-      {/*  <div key={index}>*/}
-      {/*    <p>*/}
-      {/*      {user.message} : <i>{user.username}</i> send at{" "}*/}
-      {/*      {convertTime(user.date)}*/}
-      {/*    </p>*/}
-      {/*  </div>*/}
-      {/*))}*/}
-
-      <button onClick={() => joinRoom("Room Dev")}>Room 1</button>
-      <button onClick={() => joinRoom("Room Prod")}>Room 2</button>
-
-      {typingMessage ? <p>{typingMessage}</p> : false}
-      <form onSubmit={sendMessage}>
-        <input type="text" value={inputMessage} onChange={handleTyping} />
-        <input type="submit" value="Send" />
-        <button type={"button"} onClick={() => setShowEmoji(!showEmoji)}>
-          😀
-        </button>
-        {showEmoji ? (
-          <Picker
-            locale={"fr"}
-            data={data}
-            onEmojiSelect={(e: { native: string }) =>
-              setInputMessage(inputMessage + e.native)
-            }
-          />
-        ) : (
-          false
-        )}
-      </form>
+      </Main>
     </>
   );
 };

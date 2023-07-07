@@ -1,6 +1,6 @@
 import { FormEvent } from "react";
 import { socket } from "../socket";
-import { Form, Input, LabelInput, InputWrapper } from "./inputs";
+import { Form, InputLog, ButtonLog, LabelInput, InputWrapper } from "./inputs";
 
 const LoginForm = ({
   handleSubmit,
@@ -25,14 +25,30 @@ const LoginForm = ({
   };
   return (
     <>
-      <h1>Welcome 👋</h1>
+      <h1>
+        Welcome{" "}
+        <img
+          width={70}
+          draggable="false"
+          src="/assets/chat-bubble-front-gradient.png"
+          alt="chat bubbles"
+        />
+      </h1>
       <p>Set a username to get started</p>
       <Form onSubmit={handleFormSubmit}>
         <InputWrapper>
           <LabelInput htmlFor="username">Username</LabelInput>
-          <Input type="text" name="username" id="username" />
+          <InputLog
+            border
+            type="text"
+            name="username"
+            id="username"
+            autoComplete="off"
+          />
         </InputWrapper>
-        <Input background={"orange"} type="submit" value="Enter" />
+        <ButtonLog background={"#E76B0A"} type="submit">
+          Enter
+        </ButtonLog>
       </Form>
     </>
   );
