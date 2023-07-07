@@ -2,7 +2,7 @@ module.exports = {
   rules: {
     'react-refresh/only-export-components': 'warn',
     'unicorn/filename-case': 'off',
-    'unicorn/prevent-abbreviations': ["error", {"replacements": {"e": false , "res": false}}],
+    'unicorn/prevent-abbreviations': ["error", {"replacements": {"e": false , "res": false,"props":false}}],
     'unicorn/no-await-expression-member': 'off'
   },
   reportUnusedDisableDirectives: true,
