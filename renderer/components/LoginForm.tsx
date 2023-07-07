@@ -1,5 +1,6 @@
 import { FormEvent } from "react";
 import { socket } from "../socket";
+import { Form, Input, LabelInput, InputWrapper } from "./inputs";
 
 const LoginForm = ({
   handleSubmit,
@@ -26,10 +27,13 @@ const LoginForm = ({
     <>
       <h1>Welcome 👋</h1>
       <p>Set a username to get started</p>
-      <form onSubmit={handleFormSubmit}>
-        <input type="text" name="username" />
-        <input type="submit" value="Enter" />
-      </form>
+      <Form onSubmit={handleFormSubmit}>
+        <InputWrapper>
+          <LabelInput htmlFor="username">Username</LabelInput>
+          <Input type="text" name="username" id="username" />
+        </InputWrapper>
+        <Input background={"orange"} type="submit" value="Enter" />
+      </Form>
     </>
   );
 };
