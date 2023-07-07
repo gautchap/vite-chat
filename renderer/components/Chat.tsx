@@ -1,10 +1,12 @@
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { socket } from "../socket";
 import { User } from "../types.js";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
 import {
+  AuthorMessage,
   ButtonSubmit,
+  Footer,
   FormMessage,
   InputText,
   Main,
@@ -34,7 +36,7 @@ const isMobile = () => {
 const Chat = ({ username }: { username: string }) => {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [messages, setMessages] = useState<User[]>([]);
-
+  const listReference = useRef<HTMLUListElement>(null);
   const [actualRoom, setActualRoom] = useState("Room Dev");
   const [typingMessage, setTypingMessage] = useState("");
   const [inputMessage, setInputMessage] = useState("");
@@ -72,6 +74,19 @@ const Chat = ({ username }: { username: string }) => {
       socket.off("receive_typing_message", onTypingMessage);
     };
   }, [username]);
+
+  useEffect(() => {
+    if (listReference.current) {
+      window.scrollTo({
+        top: listReference.current.scrollHeight + window.innerHeight,
+        left: 0,
+        behavior: "smooth",
+      });
+    }
+    return () => {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    };
+  }, [messages, typingMessage]);
 
   const sendMessage = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -121,35 +136,28 @@ const Chat = ({ username }: { username: string }) => {
       {isConnected ? <p>connected</p> : <p>disconnected</p>}
 
       <Main>
-        <Ul>
+        <Ul ref={listReference}>
           {messages.map((user, index) =>
             user.username === username ? (
-              <div key={`${user.id}_${index}`}>
+              <li key={`${user.id}_${index}`} style={{ textAlign: "end" }}>
                 <SendMessage>
-                  <p>
-                    {user.message} : <i>{user.username}</i> send at{" "}
-                    {convertTime(user.date)}
-                  </p>
+                  {user.message} : send at {convertTime(user.date)}
                 </SendMessage>
-              </div>
+              </li>
             ) : (
-              <div key={`${user.id}_${index}`}>
+              <li key={`${user.id}_${index}`}>
+                <AuthorMessage>{user.username}</AuthorMessage>
                 <ReceiveMessage>
-                  <p>
-                    {user.message} : <i>{user.username}</i> send at{" "}
-                    {convertTime(user.date)}
-                  </p>
+                  {user.message} : send at {convertTime(user.date)}
                 </ReceiveMessage>
-              </div>
+              </li>
             )
           )}
         </Ul>
 
-        <div>
-          {/*<button onClick={() => joinRoom("Room Dev")}>Room 1</button>*/}
-          {/*<button onClick={() => joinRoom("Room Prod")}>Room 2</button>*/}
+        {typingMessage ? <p>{typingMessage}</p> : false}
 
-          {typingMessage ? <p>{typingMessage}</p> : false}
+        <Footer>
           <FormMessage onSubmit={sendMessage}>
             <InputText
               type="text"
@@ -189,7 +197,7 @@ const Chat = ({ username }: { username: string }) => {
               false
             )}
           </FormMessage>
-        </div>
+        </Footer>
       </Main>
     </>
   );
