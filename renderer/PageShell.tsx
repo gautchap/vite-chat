@@ -26,15 +26,19 @@ const globalStyles = css`
   :root {
     line-height: 1.5;
     font-weight: 400;
-    font-family: Inter, -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI",
-      Roboto, "Helvetica Neue", Arial, sans-serif;
+
+    color: #141414;
+    font-family: Poppins, -apple-system, system-ui, BlinkMacSystemFont,
+      "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     -webkit-text-size-adjust: 100%;
   }
+  html,
   body {
     margin: 0;
+    font-size: 16px;
   }
 `;

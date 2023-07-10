@@ -25,10 +25,11 @@ export const LabelInput = styled.label`
 export const InputLog = styled.input<InputProps>`
   width: 100%;
   border-radius: 20px;
+  font-size: 20px;
   border: ${(props) => (props.border ? "2px solid lightgrey" : "none")};
   padding: 0 1.5em;
   background-color: ${(props) => props.background};
-  font-weight: 600;
+  font-weight: 800;
   &:focus-visible {
     outline-color: grey;
   }

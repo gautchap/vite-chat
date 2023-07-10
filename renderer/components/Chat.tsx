@@ -8,6 +8,7 @@ import {
   ButtonSubmit,
   Footer,
   FormMessage,
+  Header,
   InputText,
   Main,
   ReceiveMessage,
@@ -37,6 +38,7 @@ const Chat = ({ username }: { username: string }) => {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [messages, setMessages] = useState<User[]>([]);
   const listReference = useRef<HTMLUListElement>(null);
+  const sendAtHover = useRef<HTMLElement>(null);
   const [actualRoom, setActualRoom] = useState("Room Dev");
   const [typingMessage, setTypingMessage] = useState("");
   const [inputMessage, setInputMessage] = useState("");
@@ -130,26 +132,29 @@ const Chat = ({ username }: { username: string }) => {
 
   return (
     <>
-      <h2>
-        {actualRoom}, {username}
-      </h2>
-      {isConnected ? <p>connected</p> : <p>disconnected</p>}
+      <Header>
+        <h2 style={{ margin: 0 }}>
+          {actualRoom}, {username}
+        </h2>
+      </Header>
+      <p style={{ marginTop: "6em" }}>
+        {isConnected ? "connected" : "disconnected"}
+      </p>
 
       <Main>
         <Ul ref={listReference}>
           {messages.map((user, index) =>
             user.username === username ? (
               <li key={`${user.id}_${index}`} style={{ textAlign: "end" }}>
-                <SendMessage>
-                  {user.message} : send at {convertTime(user.date)}
-                </SendMessage>
+                <SendMessage>{user.message}</SendMessage>
               </li>
             ) : (
               <li key={`${user.id}_${index}`}>
                 <AuthorMessage>{user.username}</AuthorMessage>
-                <ReceiveMessage>
-                  {user.message} : send at {convertTime(user.date)}
-                </ReceiveMessage>
+                <ReceiveMessage>{user.message}</ReceiveMessage>
+                <i style={{ marginLeft: "1em" }}>
+                  send at {convertTime(user.date)}
+                </i>
               </li>
             )
           )}
@@ -166,6 +171,12 @@ const Chat = ({ username }: { username: string }) => {
               placeholder="Send a message ..."
             />
 
+            {isMobile() === "PC" && (
+              <ButtonSubmit emoji onClick={() => setShowEmoji(!showEmoji)}>
+                😀
+              </ButtonSubmit>
+            )}
+
             <ButtonSubmit type="submit">
               <svg
                 style={{ verticalAlign: "middle" }}
@@ -179,11 +190,6 @@ const Chat = ({ username }: { username: string }) => {
                 />
               </svg>
             </ButtonSubmit>
-            {isMobile() === "PC" && (
-              <button type={"button"} onClick={() => setShowEmoji(!showEmoji)}>
-                😀
-              </button>
-            )}
 
             {showEmoji ? (
               <Picker
