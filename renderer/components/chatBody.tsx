@@ -6,6 +6,7 @@ type AuthorALign = {
 
 type EmojiButton = {
   emoji?: boolean;
+  size: string;
 };
 
 export const Main = styled.main`
@@ -40,9 +41,10 @@ export const ButtonSubmit = styled.button<EmojiButton>`
   border: none;
   cursor: pointer;
   border-radius: 20px;
+  font-size: ${(props) => props.size};
   background: ${(props) => (props.emoji ? "none" : "#1b90ff")};
   position: absolute;
-  right: ${(props) => (props.emoji ? "4em" : "1em")};
+  right: ${(props) => (props.emoji ? "3.5em" : "1em")};
   top: 50%;
   transform: translate(0, -50%);
 `;
@@ -94,4 +96,10 @@ export const Footer = styled.footer`
   height: 5em;
   position: fixed;
   bottom: 0;
+`;
+
+export const EmojiWrapper = styled.div`
+  position: absolute;
+  bottom: 5em;
+  right: 1em;
 `;

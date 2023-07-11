@@ -14,6 +14,7 @@ import {
   ReceiveMessage,
   SendMessage,
   Ul,
+  EmojiWrapper,
 } from "./chatBody";
 
 const convertTime = (date: number | undefined) => {
@@ -172,12 +173,17 @@ const Chat = ({ username }: { username: string }) => {
             />
 
             {isMobile() === "PC" && (
-              <ButtonSubmit emoji onClick={() => setShowEmoji(!showEmoji)}>
+              <ButtonSubmit
+                size="17px"
+                type="button"
+                emoji
+                onClick={() => setShowEmoji(!showEmoji)}
+              >
                 😀
               </ButtonSubmit>
             )}
 
-            <ButtonSubmit type="submit">
+            <ButtonSubmit size="14px" type="submit">
               <svg
                 style={{ verticalAlign: "middle" }}
                 xmlns="http://www.w3.org/2000/svg"
@@ -192,13 +198,16 @@ const Chat = ({ username }: { username: string }) => {
             </ButtonSubmit>
 
             {showEmoji ? (
-              <Picker
-                locale={"fr"}
-                data={data}
-                onEmojiSelect={(e: { native: string }) =>
-                  setInputMessage(inputMessage + e.native)
-                }
-              />
+              <EmojiWrapper>
+                <Picker
+                  theme="light"
+                  locale={"fr"}
+                  data={data}
+                  onEmojiSelect={(e: { native: string }) =>
+                    setInputMessage(inputMessage + e.native)
+                  }
+                />
+              </EmojiWrapper>
             ) : (
               false
             )}
