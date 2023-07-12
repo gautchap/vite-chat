@@ -1,5 +1,5 @@
 import { useState } from "react";
-import LoginForm from "../../renderer/components/LoginForm";
+import Login from "../../renderer/components/Login";
 import Chat from "../../renderer/components/Chat";
 
 export { Page };
@@ -16,7 +16,7 @@ function Page() {
       {username ? (
         <Chat username={username} />
       ) : (
-        <LoginForm handleSubmit={handleSubmit} />
+        <Login handleSubmit={handleSubmit} />
       )}
     </>
   );

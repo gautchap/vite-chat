@@ -26,7 +26,6 @@ const globalStyles = css`
   :root {
     line-height: 1.5;
     font-weight: 400;
-
     color: #141414;
     font-family: Poppins, -apple-system, system-ui, BlinkMacSystemFont,
       "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;

@@ -3,20 +3,19 @@ import { socket } from "../socket";
 import { User } from "../types.js";
 import data from "@emoji-mart/data";
 import Picker from "@emoji-mart/react";
+import { EmojiContainer } from "./Wrapper/Container";
+import { FormMessage, InputText } from "./Form/FormStyling";
 import {
   AuthorMessage,
-  ButtonSubmit,
   Footer,
-  FormMessage,
   Header,
-  InputText,
   Main,
   ReceiveMessage,
   SendMessage,
   Ul,
-  EmojiWrapper,
   RoomTitle,
-} from "./chatBody";
+} from "./ChatStyling";
+import { ButtonEmoji, ButtonSend } from "./Buttons/Buttons";
 
 const convertTime = (date: number | undefined) => {
   if (typeof date === "number") {
@@ -37,28 +36,19 @@ const isMobile = () => {
 };
 
 const Chat = ({ username }: { username: string }) => {
-  const [isConnected, setIsConnected] = useState(socket.connected);
   const [messages, setMessages] = useState<User[]>([]);
   const listReference = useRef<HTMLUListElement>(null);
-  const sendAtHover = useRef<HTMLElement>(null);
   const [actualRoom, setActualRoom] = useState("Room Dev");
   const [typingMessage, setTypingMessage] = useState("");
   const [inputMessage, setInputMessage] = useState("");
   const [showEmoji, setShowEmoji] = useState(false);
 
   useEffect(() => {
-    function onConnect() {
-      setIsConnected(true);
-    }
-
     function onMessage(data: User[]) {
       setMessages(data);
       return setTypingMessage("");
     }
 
-    function onDisconnect() {
-      setIsConnected(false);
-    }
     function onTypingMessage(data: { isTyping: boolean; username: string }) {
       if (data.isTyping) {
         return setTypingMessage(`${data.username} is writing ...`);
@@ -66,14 +56,10 @@ const Chat = ({ username }: { username: string }) => {
       return setTypingMessage("");
     }
 
-    socket.on("connect", onConnect);
-    socket.on("disconnect", onDisconnect);
     socket.on("receive_message", onMessage);
     socket.on("receive_typing_message", onTypingMessage);
 
     return () => {
-      socket.off("connect", onConnect);
-      socket.off("disconnect", onDisconnect);
       socket.off("receive_message", onMessage);
       socket.off("receive_typing_message", onTypingMessage);
     };
@@ -169,34 +155,12 @@ const Chat = ({ username }: { username: string }) => {
               onChange={handleTyping}
               placeholder="Send a message ..."
             />
-
             {isMobile() === "PC" && (
-              <ButtonSubmit
-                size="17px"
-                type="button"
-                emoji
-                onClick={() => setShowEmoji(!showEmoji)}
-              >
-                😀
-              </ButtonSubmit>
+              <ButtonEmoji setShowEmoji={setShowEmoji} showEmoji={showEmoji} />
             )}
-
-            <ButtonSubmit size="14px" type="submit">
-              <svg
-                style={{ verticalAlign: "middle" }}
-                xmlns="http://www.w3.org/2000/svg"
-                height="1em"
-                viewBox="0 0 384 512"
-              >
-                <path
-                  fill="white"
-                  d="M214.6 41.4c-12.5-12.5-32.8-12.5-45.3 0l-160 160c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L160 141.2V448c0 17.7 14.3 32 32 32s32-14.3 32-32V141.2L329.4 246.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3l-160-160z"
-                />
-              </svg>
-            </ButtonSubmit>
-
+            <ButtonSend />
             {showEmoji ? (
-              <EmojiWrapper>
+              <EmojiContainer>
                 <Picker
                   theme="light"
                   locale={"fr"}
@@ -205,7 +169,7 @@ const Chat = ({ username }: { username: string }) => {
                     setInputMessage(inputMessage + e.native)
                   }
                 />
-              </EmojiWrapper>
+              </EmojiContainer>
             ) : (
               false
             )}
