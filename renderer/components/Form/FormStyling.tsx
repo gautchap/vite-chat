@@ -1,10 +1,12 @@
 import styled from "@emotion/styled";
+import { upFade } from "../animate";
 
 export const Form = styled.form`
   display: flex;
   flex-wrap: wrap;
   height: 15vh;
   gap: 1em;
+  animation: ${upFade} 1s ease;
 `;
 
 export const LabelInput = styled.label`

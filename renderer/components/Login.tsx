@@ -3,6 +3,7 @@ import { socket } from "../socket";
 import { Container, LoginContainer } from "./Wrapper/Container";
 import FormLogin from "./Form/FormLogin";
 import styled from "@emotion/styled";
+import { pulse, rightFade } from "./animate";
 
 const PageTitle = styled.h1`
   background: linear-gradient(92.72deg, #1b90ff 0%, #876bce 100%);
@@ -11,6 +12,15 @@ const PageTitle = styled.h1`
   display: inline-block;
   margin: 0;
   font-size: 2rem;
+  animation: ${rightFade} 1s ease;
+`;
+
+const P = styled.p`
+  animation: ${rightFade} 1s ease;
+`;
+
+const Image = styled.img`
+  animation: ${pulse} 2s infinite ease-in-out alternate;
 `;
 
 const Login = ({ handleSubmit }: { handleSubmit: (user: string) => void }) => {
@@ -36,14 +46,14 @@ const Login = ({ handleSubmit }: { handleSubmit: (user: string) => void }) => {
         <LoginContainer>
           <section>
             <PageTitle>Welcome</PageTitle>
-            <img
+            <Image
               width={70}
               draggable="false"
               src="/assets/chat-bubble-front-gradient.png"
               alt="chat bubbles"
             />
           </section>
-          <p>Set a username to get started</p>
+          <P>Set a username to get started</P>
           <FormLogin handleFormSubmit={handleFormSubmit} />
         </LoginContainer>
       </Container>
