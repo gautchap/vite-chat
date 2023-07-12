@@ -15,6 +15,7 @@ import {
   SendMessage,
   Ul,
   EmojiWrapper,
+  RoomTitle,
 } from "./chatBody";
 
 const convertTime = (date: number | undefined) => {
@@ -134,13 +135,10 @@ const Chat = ({ username }: { username: string }) => {
   return (
     <>
       <Header>
-        <h2 style={{ margin: 0 }}>
+        <RoomTitle>
           {actualRoom}, {username}
-        </h2>
+        </RoomTitle>
       </Header>
-      <p style={{ marginTop: "6em" }}>
-        {isConnected ? "connected" : "disconnected"}
-      </p>
 
       <Main>
         <Ul ref={listReference}>
