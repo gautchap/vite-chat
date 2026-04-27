@@ -24,7 +24,7 @@
         "sirv": "^2.0.3",
         "socket.io": "^4.7.2",
         "socket.io-client": "^4.7.2",
-        "vite": "^4.4.9",
+        "vite": "^6.0.0",
         "vite-plugin-ssr": "^0.4.141"
     },
     "type": "module",
